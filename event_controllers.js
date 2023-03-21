@@ -1,7 +1,6 @@
 const User = require('./model')
 
 module.exports.getall_users = async (req, res) => {
-    console.log(req.connection.remoteAddress)
     try {
         const events = await User.find({})
         res.status(200).json(events)
@@ -25,8 +24,7 @@ module.exports.get_users = async (req, res) => {
 module.exports.editEvent = async (req, res) => {
     try {
         const {id} = req.params
-        const ip = req.connection.remoteAddress;
-        const user = await User.findByIdAndUpdate(id, {...req.body, ip});
+        const user = await User.findByIdAndUpdate(id, {...req.body});
         await user.save();
         res.status(200).json("Successfully Edited")
     } catch (error) {
@@ -37,14 +35,13 @@ module.exports.editEvent = async (req, res) => {
 
 module.exports.addEvent = async (req, res) => {
     try {
-        const ip = req.connection.remoteAddress;
         const {rollno} = {...req.body};
         const existinguser = await User.findOne({rollno})
         if (existinguser) {
             res.status(200).json("User Already Created Please Delete and Create")
         }
         else {
-            const newEvent = new User({...req.body, ip})
+            const newEvent = new User({...req.body})
             await newEvent.save();
             res.status(200).json(newEvent)
         }
